@@ -7,10 +7,47 @@
 % \VignetteDepends{PSM}
 \usepackage{boxedminipage}
 
+% Sweave hack by inserting %\usepackage{Sweave} then Sweave does not insert it's own line
+%\usepackage{Sweave}
 <<Sweavepath,include=FALSE,echo=FALSE>>=
 sweavepath <- gsub("[\\]",'/',R.home("share/texmf/"))
 @ 
-\usepackage{\Sexpr{sweavepath}Sweave}
+%\usepackage{\Sexpr{sweavepath}Sweave} % not used - inserted below instead.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BEGIN Sweave.sty
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{Sweave}{}
+
+\RequirePackage{ifthen}
+\newboolean{Sweave@gin}
+\setboolean{Sweave@gin}{true}
+\newboolean{Sweave@ae}
+\setboolean{Sweave@ae}{true}
+
+\DeclareOption{nogin}{\setboolean{Sweave@gin}{false}}
+\DeclareOption{noae}{\setboolean{Sweave@ae}{false}}
+\ProcessOptions
+
+\RequirePackage{graphicx,fancyvrb}
+\IfFileExists{upquote.sty}{\RequirePackage{upquote}}{}
+
+\ifthenelse{\boolean{Sweave@gin}}{\setkeys{Gin}{width=0.8\textwidth}}{}%
+\ifthenelse{\boolean{Sweave@ae}}{%
+  \RequirePackage[T1]{fontenc}  
+  \RequirePackage{ae}
+}{}%
+
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=sl}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{fontshape=sl}
+
+\newenvironment{Schunk}{}{}
+% END Sweave.sty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 %%%
 % look and feel of the R code
 %%%
@@ -20,7 +57,6 @@ sweavepath <- gsub("[\\]",'/',R.home("share/texmf/"))
 %%%
 % put R code and R-code output in a boxed minipage:
 %%%
-\definecolor{light}{gray}{.75} 
 \renewenvironment{Schunk}
 {\begin{center} \begin{boxedminipage}{0.95\textwidth} }
 {\end{boxedminipage}\end{center}}

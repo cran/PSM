@@ -103,7 +103,6 @@ PSM.simulate(Model, Data, THETA, deltaTime, longX=TRUE)
 
 \examples{
 cat("\nExamples are included in the package vignette.\n")
-vignette("PSM",package="PSM")
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

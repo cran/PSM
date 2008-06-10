@@ -199,7 +199,6 @@ PSM.estimate(Model, Data, Par, CI = FALSE, trace = 0, control=NULL, fast=TRUE)
 
 \examples{
 cat("\nExamples are included in the package vignette.\n")
-vignette("PSM")
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

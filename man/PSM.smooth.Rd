@@ -96,7 +96,6 @@ PSM.smooth(Model, Data, THETA, subsample = 0, trace = 0, etaList = NULL)
 }
 \examples{
 cat("\nExamples are included in the package vignette.\n")
-vignette("PSM",package="PSM")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
