@@ -8,9 +8,9 @@ PSM.template <- function(Linear=FALSE,dimX=2,dimY=3,dimU=4,dimEta=5,file="") {
     str <- paste(str,"\n       matA=matrix(c(  ), nrow=",dimX,", ncol=",dimX,"),",sep="")
     if(dimU)
     str <- paste(str,"\n       matB=matrix(c(  ), nrow=",dimX,", ncol=",dimU,"),",sep="")
-    str <- paste(str,"\n       matC=matrix(c(  ), nrow=",dimY,", ncol=",dimX,"),",sep="")
+    str <- paste(str,"\n       matC=matrix(c(  ), nrow=",dimY,", ncol=",dimX,")",sep="")
     if(dimU)
-    str <- paste(str,"\n       matD=matrix(c(  ), nrow=",dimX,", ncol=",dimU,")",sep="")
+    str <- paste(str,",\n       matD=matrix(c(  ), nrow=",dimX,", ncol=",dimU,")",sep="")
     str <- paste(str,"       )",sep="\n")
     str <- paste(str,"}",sep="\n")
   } else {
