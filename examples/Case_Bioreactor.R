@@ -5,9 +5,11 @@
 rm(list=ls())
 
 library(PSM)
+#library(nlme)
 
 # Load the Data and Variables
 tmpData <- read.table("sde0_1.csv",sep=";", col.names=c("Time","F","y1","y2","y3"))
+tmpData <- read.table("~/PSM/PSM/examples/sde0_1.csv",sep=";", col.names=c("Time","F","y1","y2","y3"))
 Time=tmpData$Time
 Y=t(tmpData[,c("y1","y2","y3")])
 U=t(as.matrix(tmpData[,c("F")]))
@@ -82,12 +84,22 @@ phi <- MyModel$ModelPar(ctsmTHETA)$theta
 ExtKalmanFilter(phi,MyModel,Data) #CTSM: -388.4857 #PSM: -388.4689
 
 
-MyPar <- list(LB = 0.5*ctsmTHETA,
-              Init = ctsmTHETA*1.1,
-              UB = 1.5*ctsmTHETA)
+if(FALSE) { #Numerical gradients
+  MyModel$Functions$df = function(x,u,time,phi) {
+    jacobian(MyModel$Functions$f,x=x,u=u,time=time,phi=phi)
+  }
+  MyModel$Functions$dg = function(x,u,time,phi) {
+    jacobian(MyModel$Functions$g,x=x,u=u,time=time,phi=phi)
+  }
+}
 
-fit <- PSM.estimate(MyModel,list(Data),MyPar,CI=TRUE,trace=1)
-fit[1:3]
+MyPar <- list(LB = 0.5*ctsmTHETA,
+              Init = ctsmTHETA*1,
+              UB = 1.5*ctsmTHETA)
+system.time(
+fit <- PSM.estimate(MyModel,list(Data),MyPar,CI=FALSE,trace=1)
+            )
+fit[1:5]
 
 ###########
 # Parameter uncertainty comparison

@@ -67,7 +67,7 @@ PSM.smooth(Model, Data, THETA, subsample = 0, trace = 0, etaList = NULL)
 	to the estimated states }
       \item{Xs, Ps}{Smoothed state and state co-variance
 	estimate}
-      \item{Ys}{Response based on smoothed state}
+      \item{Ys}{Response based on smoothed state: Ys = g(Xs). }
       \item{Xf, Pf}{Filtered state and state co-variance
 	estimate} 
       \item{Xp, Pp}{Predicted state and state co-variance

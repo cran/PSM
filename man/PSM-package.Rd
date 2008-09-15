@@ -18,13 +18,19 @@
   Function overview:
   
   \code{PSM.estimate}\cr
-  Estimate population parameters for any linear model.
+  Estimate population parameters for any linear or non-linear model.
   
   \code{PSM.smooth}\cr
   Optimal estimates of model states based on estimated parameters.
   
   \code{PSM.simulate}\cr
   Simulate data for multiple individuals.
+
+  \code{PSM.plot}\cr
+  Plot data, state estimates ect. for multiple individuals.
+
+  \code{PSM.template}\cr
+  Creates a template with R-syntax to help setup a model in PSM.
 
 }
 

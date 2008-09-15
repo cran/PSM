@@ -122,7 +122,47 @@ ModelCheck <- function(Model , Data , Par, DataHasY=TRUE) {
       errmsg <- ("D is not a matrix") ; return(list(errmsg = errmsg, ok=FALSE)) }
   }
 
-  
+
+  all.equal2 <- function(target,current,...) {
+    out <- all.equal(target,current,...)
+    b <- isTRUE(out)
+    attributes(b) <- list(msg=as.character(out))
+    b
+  }
+
+  #f, df, g, dg
+  if(!Linear) {
+    dimX <- length(X0)
+    if(!(is.matrix(f) & is.matrix(df) & is.matrix(g) & is.matrix(dg))) {
+      errmsg <- ("Either f, df, g or df is not a matrix.") ; return(list(errmsg = errmsg, ok=FALSE)) }
+    if(!all.equal2(dim(f),c(dimX,1))) {
+      errmsg <- ("The dimension of the output from f is not c(dimX,1)") ; return(list(errmsg = errmsg, ok=FALSE)) }
+    if(!all.equal2(dim(df),c(dimX,dimX))) {
+      errmsg <- ("The dimension of the output from df is not c(dimX,dimX)") ; return(list(errmsg = errmsg, ok=FALSE)) }
+    if(DataHasY) {
+      dimY <- dim(Data$Y)[1]    
+      if(!all.equal2(dim(g),c(dimY,1))) {
+        errmsg <- ("The dimension of the output from g is not c(dimY,1)") ; return(list(errmsg = errmsg, ok=FALSE)) }
+      if(!all.equal2(dim(dg),c(dimY,dimX))) {
+        errmsg <- ("The dimension of the output from dg is not c(dimY,dimX)") ; return(list(errmsg = errmsg, ok=FALSE)) }
+    } else {
+      if(!dim(g)[1]==dim(dg)[1]){
+        errmsg <- ("Number of rows in the output from g and dg are not equal") ; return(list(errmsg = errmsg, ok=FALSE)) }
+      if(!dim(g)[2]==1){
+        errmsg <- ("Number of columns in the output from g are not 1.") ; return(list(errmsg = errmsg, ok=FALSE)) }
+      if(!dim(dg)[2]==dimX){
+        errmsg <- ("Number of columns in the output from dg are not dimX.") ; return(list(errmsg = errmsg, ok=FALSE)) }
+    }
+    tmptest <- all.equal2(df,jacobian(func=Model$Functions$f,x=X0,u=Uk,time=Data$Time[1],phi=phi))
+    if(!tmptest) {
+        warning(paste("The output matrix from df does not appear to be equal to a numerical approximation of the jacobian of f.",
+                      attributes(tmptest)$msg)) }
+    tmptest <- all.equal2(dg,jacobian(func=Model$Functions$g,x=X0,u=Uk,time=Data$Time[1],phi=phi))
+    if(!tmptest) {
+      warning(paste("The output matrix from dg does not appear to be equal to a numerical approximation of the jacobian of g.",
+                    attributes(tmptest)$msg)) }
+  }
+
 
   # Test for positive semidefinit
   if(dim(SIG)[1]!=dim(SIG)[2] || dim(SIG)[1]==0) {

@@ -1,7 +1,7 @@
 rm(list=ls())
 
 detach(package:PSM)
-library(PSM,lib.loc="~/PSM/Rpackages/gridterm")
+library(PSM)
 
 REDO = FALSE
 
@@ -38,20 +38,21 @@ Model.SimDose <- list(
                       ModelPar = function(THETA){
                         list(theta=list(sig11=THETA[1], S=THETA[2]),
                              OMEGA=matrix(THETA[3]) )
-                      },
-                      Dose = list(
-                        Time = c(30,180),
-                        State = c(1, 1),
-                        Amount = c(1500,1500)
-                        )
+                      }
                       )
 
 # Create Simulation Timeline 
 SimDose.Subj <- 2
 if(REDO) {
   SimDose.Data <- vector(mode="list",length=SimDose.Subj)
-  for (i in 1:SimDose.Subj) 
+  for (i in 1:SimDose.Subj) {
     SimDose.Data[[i]]$Time <- seq(from=10,by=10,to=400)
+    SimDose.Data[[i]]$Dose <- list(
+                        Time = c(30,180),
+                        State = c(1, 1),
+                        Amount = c(1500,1500)
+                        )
+  }
 }
 
 #############
@@ -70,6 +71,8 @@ if(REDO) {
   # View the Simulated datastructure
 names(SimDose.Data[[1]])
 
+
+PSM.plot(SimDose.Data,type=c('Y','longX','eta'))
 # Plot of the simulations
 par(mfcol=c(3,SimDose.Subj),mar = c(2, 4, 2, 2)+.1)
 for(id in 1:SimDose.Subj) {
@@ -163,6 +166,9 @@ out <- PSM.smooth(Model = Model.SimDose, Data = SimDose.Data, THETA = fitA$THETA
 #save(list=c('SimDose.Data','fitA','out'),file='simdose.RData')
 # View the data structure
 names(out[[1]])
+PSM.plot(SimDose.Data,out)
+PSM.plot(Data=SimDose.Data,out,type=c('X','longX'))
+1
 
 #Plot of the smoothed estimates
 par(mfcol=c(3,SimDose.Subj),mar = c(2, 4, 2, 2)+.1)

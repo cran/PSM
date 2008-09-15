@@ -17,7 +17,9 @@ PSM.estimate(Model, Data, Par, CI = FALSE, trace = 0, control=NULL, fast=TRUE)
 
     \describe{
       \item{\code{Matrices = function(phi)}}{
-	\emph{Only in linear models.} Defines the matrices \eqn{A}, \eqn{B},
+	\emph{Only in linear models.}
+
+	Defines the matrices \eqn{A}, \eqn{B},
 	\eqn{C} and \eqn{D} in
 	the model equation. Must return a list of matrices named
 	\code{matA}, \code{matB}, \code{matC} and \code{matD}.
@@ -27,13 +29,24 @@ PSM.estimate(Model, Data, Par, CI = FALSE, trace = 0, control=NULL, fast=TRUE)
 	this is not supported in the compiled Fortran code.
       }
       \item{\code{Functions}}{
-	\emph{Only in non-linear models.} A list containing the functions
+	\emph{Only in non-linear models.}
+
+	A list containing the functions
 	\code{f(x,u,time,phi)}, \code{g(x,u,time,phi)},
-	\code{df(x,u,time,phi)} and \code{dg(x,u,time,phi)}. The functions \code{f}
-	and \code{g} defines the
+	\code{df(x,u,time,phi)} and \code{dg(x,u,time,phi)}.
+
+	The functions \code{f} and \code{g} defines the
 	system and \code{df}
 	and \code{dg} are the Jacobian matrices with first-order partial
-	derivatives for \code{f(x)} and \code{g(x)} which is needed to evaluate the model.
+	derivatives for \code{f(x)} and \code{g(x)} which is needed to
+	evaluate the model. A warning is issued if \code{df}
+	or \code{dg} appear to be incorrect based on a numerical
+	evaluation of the Jacobians of \code{f(x)} and \code{g(x)}.
+
+	It is possible to avoid specifying the Jacobian functions in the model
+	and use numerical approximations instead, but this will increase
+	estimation time at least ten-fold. See the section
+	\sQuote{Numerical Jacobians of f and g} below for more information.
       }
       \item{\code{X0 = function(Time, phi, U)}}{
 	Defines the model state at \code{Time[1]} before
@@ -153,7 +166,7 @@ PSM.estimate(Model, Data, Par, CI = FALSE, trace = 0, control=NULL, fast=TRUE)
 
   \deqn{ dx_t = f(x_t,u_t,t,\phi_i)dt + \sigma(u_t,t,\phi_i) d\omega_t}{
     dx = f(x,u,t,phi)dt + SIG(u,t,phi)dw}
-  \deqn{y_{ij} = h(x_{ij},u_{ij},t_{ij},\phi_i) + e_{ij}}{y = h(x, u, t,
+  \deqn{y_{ij} = g(x_{ij},u_{ij},t_{ij},\phi_i) + e_{ij}}{y = g(x, u, t,
     phi) + e}
 
   where \eqn{e_{ij} \sim N(0,S(u_{ij},t_{ij},\phi_i))}{e ~ N(0,S(x, u, t))} and \eqn{\omega_t}{w} is a
@@ -180,6 +193,34 @@ PSM.estimate(Model, Data, Par, CI = FALSE, trace = 0, control=NULL, fast=TRUE)
   \item{COR}{Correlation matrix for the estimated parameters}
   \item{sec}{Time for the estimation in seconds}
   \item{opt}{Raw output from \code{optim}}
+}
+
+\section{Numerical Jacobians of f and g}{
+  Automatic numerical approximations of the Jacobians of \code{f} and
+  \code{g} can be used in PSM. In the folliwing, the name of the model
+  object is assumed to be \code{MyModel}.
+
+  First define the
+  functions \code{MyModel$Functions$f} and
+  \code{MyModel$Functions$g}. When these are defined in MyModel the
+  functions \code{df} and \code{dg} can be added to the model object by
+  writing as below: 
+
+  \preformatted{
+  MyModel$Functions$df = function(x,u,time,phi) {
+    jacobian(MyModel$Functions$f,x=x,u=u,time=time,phi=phi)
+  }
+  MyModel$Functions$dg = function(x,u,time,phi) {
+    jacobian(MyModel$Functions$g,x=x,u=u,time=time,phi=phi)
+  }
+
+  }
+
+  This way of defining \code{df} and \code{dg} forces a numerical
+  evaluation of the Jacobians using the \pkg{numDeriv} package. It may
+  be usefull in some cases, but it should be stressed that it will
+  probably give at least a ten-fold increase in estimation times.
+
 }
 
 \note{

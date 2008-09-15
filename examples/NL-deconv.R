@@ -1,3 +1,4 @@
+library(PSM)
 
 k1 = 0.053; k2 = 0.051; ke = 0.062;
 MyModel <- vector(mode="list")
@@ -34,13 +35,28 @@ MyModel$ModelPar = function(THETA) {
          SIG33=THETA['SIG33']
          ))
 }
-MyModel$Dose = list(Time=c(10,20,40,50,50), State=c(3,3,3,2,1), Amount=c(100,100,-100,300,4000))
+
+#TEST numerical df + dg
+MyModel$Functions$df = function(x,u,time,phi) {
+  jacobian(MyModel$Functions$f,x=x,u=u,time=time,phi=phi)
+}
+MyModel$Functions$dg = function(x,u,time,phi) {
+  jacobian(MyModel$Functions$g,x=x,u=u,time=time,phi=phi)
+}
 
 
-TimeData <- list(list( Time = seq(0,100,10)))
+TimeData <- list(list( Time = seq(0,100,10,
+                       Dose = list(Time=c(10,20,40,50,50), State=c(3,3,3,2,1),
+                         Amount=c(100,100,-100,300,4000)))),
+                 list( Time = seq(0,100,10,
+                       Dose = list(Time=c(10,20,40,50,50), State=c(3,3,3,2,1),
+                         Amount=c(100,100,-100,300,4000))))
+                 )
 
 MyTHETA <- c(S = 5000,SIG33=5)
 Data <- PSM.simulate(MyModel,TimeData,MyTHETA,deltaTime=.1)
+
+PSM.plot(Data,type=c('Y','longX'))
 
 par(mfrow=c(3,1))
 for(i in 1:3) {
@@ -52,10 +68,14 @@ par <- list(LB = MyTHETA*.1,
             Init = MyTHETA,
             UB = MyTHETA*2)
 
-fit <- PSM.estimate(MyModel,Data,par,trace=1)
-fit[1:2]
+system.time(
+            fit <- PSM.estimate(MyModel,Data,par,trace=1,CI=TRUE)
+            )
+fit[1:5]
 
-sm <- PSM.smooth(MyModel,Data,fit$THETA,subs=40)[[1]]
+smooth <- PSM.smooth(MyModel,Data,fit$THETA,subs=40)
+sm <- smooth[[1]]
+PSM.plot(Data,smooth,type=c('Ys.Y','Xs'))
 
 par(mfrow=c(3,1))
 for(i in 1:3) {

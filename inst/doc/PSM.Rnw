@@ -146,7 +146,7 @@ d\bs x_t & = & ( \bs A(\bs\phi_i) \bs x_t + \bs B(\bs\phi_i) \bs u_t)dt +\bs\sig
 
 \begin{eqnarray}
   d\bs x_t &=& \bs f(\bs x_t,\bs u_t,t,\bs\phi_i)dt + \bs\sigma(u_t,t,\phi_i) d\bs\omega_t \\
-  \bs y_{ij} &=& \bs h(\bs x_{ij},\bs u_{ij},t_{ij},\bs\phi_i) + \bs e_{ij}
+  \bs y_{ij} &=& \bs g(\bs x_{ij},\bs u_{ij},t_{ij},\bs\phi_i) + \bs e_{ij}
 \end{eqnarray}
 
 \noindent where $t$ is the
@@ -165,13 +165,19 @@ depend on input and time, that is $S(\bs u_t, t, \bs\phi_i))$.
 
 In the evaluation of the non-linear model is necessary to specify a
 Jacobian matrix function with first-order partial derivatives for $\bs
-f$ and $\bs h$. These functions are defined as
+f$ and $\bs g$. These functions are defined as
 
 \begin{equation}
-\frac{\partial \bs f}{\partial \bs x_t} ~~, ~~ \frac{\partial \bs h}{\partial \bs x_t}
+\frac{\partial \bs f}{\partial \bs x_t} ~~, ~~ \frac{\partial \bs g}{\partial \bs x_t}
 \end{equation}
 
-\noindent and must be given with the model specification. 
+\noindent and must be given with the model specification. PSM will
+check the user defined Jacobian functions with numerical evaluations of
+the Jacobians of $\bs f$ and $\bs g$ to ensure that they are correct. 
+It is possible to avoid specifying the Jacobian functions in the model
+and use numerical approximations instead, but this will increase
+estimation time at least ten-fold. See the help file in \verb+R+ for
+\verb+PSM.estimate+ for details regarding this.
 
 The initial state of the model is given as a function of $t_1$,
 $\bs\phi_i$, and $u_{i1}$ and defines the model state at time $t_1$
@@ -196,7 +202,7 @@ The second stage model describes the variation of the individual
 parameters $\bs\phi_i$ between individuals and is defined as
 
 \begin{equation}
-\bs \phi_i = g(\bs \theta, \bs \eta_i, \bs Z_i) 
+\bs \phi_i = \bs h(\bs \theta, \bs \eta_i, \bs Z_i) 
 \label{eqInd}
 \end{equation}
 
@@ -459,7 +465,7 @@ data set. Each element in the list must contain:
     missing values and is assumed constant between sample times
     (zero-order hold). It must have the same number of columns as \verb+Y+.
   \item \verb+covar+ - A vector/list with covariates to be used in the
-    function \verb+$h$+.
+    function \verb+$h+.
   \item \verb+Dose+ - A list containing three vectors: Time, State and
     Amount. See help(PSM.estimate) for more detail.
 \end{itemize}
@@ -476,7 +482,7 @@ MyData[[2]] <- list(Time=3:7,Y=matrix(c(1.9,2.1,2.0,2.9,3.5),nrow=1),covar=c(BMI
 
 \subsubsection*{Main functions}
 
-The PSM program is accessed in R through three main functions:
+The PSM program is accessed in R through five main functions:
 
 \begin{itemize}
 \item \verb+PSM.simulate(Model, Data, THETA, deltaTime)+ \\
@@ -492,9 +498,19 @@ The PSM program is accessed in R through three main functions:
   returns both the predicted, filtered and smoothed state
   estimates and for models with random effects an estimate of these are
   also returned. 
+\item \verb+PSM.plot(Data, Smooth, indiv, type)+\\
+  Creates a matrix plot with a column for each individual. The rows
+  can show observations, simulated and estimated states, residuals,
+  auto-correlation functions, the x and/or y axis can be on log-scale and
+  it is possible to list simulated or estimated random effects on the plot.
+\item \verb+PSM.template(Linear,dimX,dimY,dimU,dimEta,file)+\\
+  Creates a template with R-syntax to help setup a model in PSM. It
+  works for both linear and non-linear models and it can output the
+  resulting template to the screen or a file.
+ 
 \end{itemize}
 
-For more information please also refer to the help files in R.
+For detailed information please refer to the help files in R.
 
 
 
@@ -669,25 +685,28 @@ if(Redo) {
   load("simdose.RData")
 @ 
 
-The simulated data are shown in Figure \ref{fig:fig1}. The first row
-shows the observations for individuals 1 and 2 and the next two show
-state 1 and 2 which we wish to estimate.
+The simulated data are shown in Figure \ref{fig:fig1} using the
+\verb+PSM.plot+ function. The first row
+shows the observations for individuals 1 and 2, the next two show
+state 1 and 2 which we wish to estimate and the simulated
+values of $\eta_1$ is shown.
 
 \begin{figure}[htb]
 \begin{center}
-%<<label=figure1,fig=TRUE,echo=FALSE,height=3.5,width=5>>=
-<<label=figure1,fig=TRUE,echo=FALSE>>=
-par(mfcol=c(3,2),mar = c(2, 4, 2, 2)+.1)
-for(id in 1:2) {
-  plot(SimDose.Data[[id]]$Time , SimDose.Data[[id]]$Y,
-         ylab="Observations", main=paste('Individual ',id,', eta= ',
-                                round(SimDose.Data[[id]]$eta,3),sep=""))
-  for(i in 1:2) {
-    plot(SimDose.Data[[id]]$longTime , SimDose.Data[[id]]$longX[i,],type="l",
-         ylab=paste('State',i))
-    rug(SimDose.Data[[id]]$Time)
-  }
-}
+%<<label=figure1,fig=TRUE,echo=FALSE>>=
+<<label=figure1,fig=TRUE,echo=TRUE,height=5.5,width=6>>=
+PSM.plot(SimDose.Data,indiv=1:2,type=c('Y','longX','eta'))
+#par(mfcol=c(3,2),mar = c(2, 4, 2, 2)+.1)
+#for(id in 1:2) {
+#  plot(SimDose.Data[[id]]$Time , SimDose.Data[[id]]$Y,
+#         ylab="Observations", main=paste('Individual ',id,', eta= ',
+#                                round(SimDose.Data[[id]]$eta,3),sep=""))
+#  for(i in 1:2) {
+#    plot(SimDose.Data[[id]]$longTime , SimDose.Data[[id]]$longX[i,],type="l",
+#         ylab=paste('State',i))
+#    rug(SimDose.Data[[id]]$Time)
+#  }
+#}
 @
 \end{center}
 \caption{Simulated data and states.}
