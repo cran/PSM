@@ -500,8 +500,8 @@ The PSM program is accessed in R through five main functions:
   also returned. 
 \item \verb+PSM.plot(Data, Smooth, indiv, type)+\\
   Creates a matrix plot with a column for each individual. The rows
-  can show observations, simulated and estimated states, residuals,
-  auto-correlation functions, the x and/or y axis can be on log-scale and
+  can show observations, inputs, simulated and estimated states, residuals and
+  auto-correlation functions. The x and/or y axis can be on log-scale and
   it is possible to list simulated or estimated random effects on the plot.
 \item \verb+PSM.template(Linear,dimX,dimY,dimU,dimEta,file)+\\
   Creates a template with R-syntax to help setup a model in PSM. It

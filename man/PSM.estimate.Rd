@@ -235,7 +235,7 @@ PSM.estimate(Model, Data, Par, CI = FALSE, trace = 0, control=NULL, fast=TRUE)
 
 \seealso{
   \code{\link{PSM}}, \code{\link{PSM.smooth}},
-  \code{\link{PSM.simulate}}, \code{\link{PSM.template}}
+  \code{\link{PSM.simulate}}, \code{\link{PSM.plot}}, \code{\link{PSM.template}}
 } 
 
 \examples{

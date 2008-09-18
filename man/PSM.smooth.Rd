@@ -92,7 +92,7 @@ PSM.smooth(Model, Data, THETA, subsample = 0, trace = 0, etaList = NULL)
 \author{ Stig B. Mortensen and Søren Klim }
 
 \seealso{   \code{\link{PSM}}, \code{\link{PSM.estimate}},
-  \code{\link{PSM.simulate}}, \code{\link{PSM.template}}
+  \code{\link{PSM.simulate}}, \code{\link{PSM.plot}}, \code{\link{PSM.template}}
 }
 \examples{
 cat("\nExamples are included in the package vignette.\n")
