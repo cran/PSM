@@ -1,6 +1,5 @@
 `PSM.estimate` <-
 function(Model,Data,Par,CI=FALSE,trace=0, control=NULL, fast=TRUE) {
-
   dimS <- length(Data)
   for(i in 1:dimS) {
     check <- ModelCheck(Model,Data[[i]],Par)
@@ -66,21 +65,53 @@ function(Model,Data,Par,CI=FALSE,trace=0, control=NULL, fast=TRUE) {
   # control
   if( is.null(control)) {
     # The user did not supply a control for the optimizer
+    optimizer <- 'optim'
     control <- list(maxit=100, trace=trace, REPORT=1 )
     # put parameters on similar scale if bounds are missing
     if(is.null(Par$LB))
       control$parscale <- abs(Par$Init)+1e-3
+  } else {
+    # The _did_ supply control par
+    optimizer <- control$optimizer
+    if(is.null(optimizer))
+      stop('Include choice of optimizer in control$optimizer')
+    control <- control[-match('optimizer',names(control))]
   }
-  
-  if(trace>1)  cat( "Using Optimizer: \t optim\n")
-  out <- optim(par = Par$Init, fn = APL.KF ,
-               gr = APL.KF.gr, method = "BFGS",
-               control = control, hessian = FALSE,
-               Model=Model, Pop.Data=Data, LB=Par$LB, UB=Par$UB,
-               GUIFlag=trace,fast=fast,Linear=Linear)
-  NegLogL     <- out$value
-  ParEstimate <- out$par
-  #if(CI) Hess <- out$hessian
+
+  switch( EXPR = optimizer,
+         optim={
+           if(trace>1)  cat( "Using Optimizer: \t optim\n")
+           out <- optim(par = Par$Init, fn = APL.KF ,
+                        gr = APL.KF.gr, method = "BFGS",
+                        control = control, hessian = FALSE,
+                        Model=Model, Pop.Data=Data, LB=Par$LB, UB=Par$UB,
+                        GUIFlag=trace,fast=fast,Linear=Linear)
+           NegLogL     <- out$value
+           ParEstimate <- out$par
+           #if(CI) Hess <- out$hessian
+         },
+         ucminf={
+           if(trace>1)  cat( "Using Optimizer: \t ucminf\n")
+           out <- ucminf(par = Par$Init, fn = APL.KF ,
+                         gr = APL.KF.gr,
+                         control = control, hessian = 0,
+                         Model=Model, Pop.Data=Data, LB=Par$LB, UB=Par$UB,
+                         GUIFlag=trace,fast=fast,Linear=Linear)
+           NegLogL     <- out$value
+           ParEstimate <- out$par
+#         },
+#         nlm={ 
+#           if(trace>1)  cat( "Using Optimizer: \t nlm\n")
+#           #typsize=Par$Init,stepmax=(.1*abs(Par$Init))+1e-3,          
+#           out <- nlm(f=APL.KF, p=Par$Init, hessian=FALSE, print.level=trace,
+#                      Model=Model, Pop.Data=Data, LB=Par$LB,
+#                      UB=Par$UB, GUIFlag=trace,fast=fast,Linear=Linear,...)
+#           NegLogL     <- out$minimum 
+#           ParEstimate <- out$estimate
+#           #if(CI) Hess <- out$hessian
+         },
+         stop( "Optimizer not recognized")      
+         )
     
     
   if(!is.null(Par$LB)) {

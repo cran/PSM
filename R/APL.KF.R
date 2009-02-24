@@ -66,7 +66,7 @@ function (THETA,Model,Pop.Data,LB=NULL,UB=NULL,GUIFlag=0,longOutput=FALSE,fast=T
      # Penalty-function
       lambda = 1e-4 #værdi fra ctsm-userguide p. xx
       dx = 1e-30    #
-      for(i in 1:length(THETA)) pen = pen + lambda*(LB[i]/(THETA[i]-LB[i]+dx) + UB[i]/(UB[i]-THETA[i]+dx))
+      for(i in 1:length(THETA)) pen = pen + lambda*(abs(LB[i])/(THETA[i]-LB[i]+dx) + abs(UB[i])/(UB[i]-THETA[i]+dx))
   }
 
   

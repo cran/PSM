@@ -103,7 +103,7 @@ Some of the most essential parts of the implentation, namely
 the Kalman filter, is for linear models run using compiled code written in Fortran,
 which gives significant improvements in the parameter estimation times
 in R. However, otherwise this version is almost entirely created in
-\emph{R}, and estimation times are thus in no way comparrable
+\emph{R}, and estimation times are thus in no way comparable to
 state-of-the-art software for similar types of models based on
 ordinary differential equations.
 
@@ -163,7 +163,7 @@ noise  measurement error,  that is $\bs e_{ij}\in N(\bs 0,\bs
 S(\bs\phi_i))$. For a non-linear model the covariance matrix may also
 depend on input and time, that is $S(\bs u_t, t, \bs\phi_i))$.
 
-In the evaluation of the non-linear model is necessary to specify a
+In the evaluation of the non-linear model it is necessary to specify a
 Jacobian matrix function with first-order partial derivatives for $\bs
 f$ and $\bs g$. These functions are defined as
 
@@ -254,7 +254,7 @@ given as
 
 \noindent where $l_i$ is the a posteriori log-likelihood function for
 the $i$th individual. This likelihood function is evaluated using the
-Kalman Filter for linear models which gives an exact solution. For
+Kalman Filter which gives an exact solution for linear models. For
 non-linear models the Extended Kalman filter (EKF) is used which is only an
 approximation. The 2nd derivative $\bs\Delta l_i$
 is approximated using the First-Order Conditional Estimation (FOCE) method, in
@@ -526,7 +526,7 @@ For detailed information please refer to the help files in R.
 
 \noindent The following provides two examples to illustrate the use of PSM. It
 may also be useful when trying to set up a new model, by using the
-shown code as model templates. 
+code shown as model templates. 
 The document is written using
 Sweave\footnote{http://www.ci.tuwien.ac.at/$\sim$leisch/Sweave/}, and thus
 all R-code in the examples shown here can be extracted into an R-script
@@ -604,8 +604,8 @@ is described as
   Y_{ij} &=& [ \begin{array}{cc} 1/V_1^i & 0 \end{array}]\bs A_{ij} + e_{ij}
 \end{eqnarray}
 
-\noindent where $\bs A_t = [ A_1 ~ A_2]^T$ are the amount in each compartment and thus
-$A_1/V_1^i$ is the measured concentration. It is seems that the
+\noindent where $\bs A_t = [ A_1 ~ A_2]^T$ is the amount in each compartment and thus
+$A_1/V_1^i$ is the measured concentration. It is seen that the
 elimination will follow a normal two-compartment model, but with a
 small random diffusion between the compartments. The mass is preserved
 since the diffusion terms are equal with opposite signs.
@@ -805,7 +805,7 @@ Cauter estimates \cite{vancauter92}.
   \label{fig:modelisr}
 \end{figure}
 
-The first two states of the simulation model is concentraion in
+The first two states of the simulation model is concentration in
 compartment 1 and 2, $C1$, $C2$. The third state is $ISR$ and is the
 secretion which is modelled as a structural part based on the three
 meal time plus a constant baseline $B$ and random noise through a

@@ -36,7 +36,7 @@
 
 \note{
   For further details please also read the package vignette pdf-document
-  by writing vignette("PSM") in R.
+  by writing \code{vignette("PSM")} in R.
 }
 
 \author{

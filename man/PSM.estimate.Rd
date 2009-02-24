@@ -144,10 +144,16 @@ PSM.estimate(Model, Data, Par, CI = FALSE, trace = 0, control=NULL, fast=TRUE)
     information on the progress of the optimization is produced. Higher
     values produces more tracing information.
   }
-  \item{control}{ The list is passed to \code{"optim"} to control the
-    settings for the optimization. As default the max iteration limit is
-    set to 100 and the remaining options are the same
-    as in \code{"optim"}. 
+  \item{control}{ A list of control parameters for the optimization of
+    the likelihood function. The list has one required component, namely:
+    \describe{
+      \item{\code{optimizer}}{ A string value equal to either
+	\code{'optim'} or \code{'ucminf'}. This gives the choise of optimizer. Default
+	is \code{optimizer = 'optim'}.
+      }
+    }
+    The remaining components in the list are given as the control argument
+    for the chosen optimizer. See corresponding help file for further detail.
   }
   \item{fast}{  Boolean. Use compiled Fortran code for faster
     estimation.
@@ -225,7 +231,7 @@ PSM.estimate(Model, Data, Par, CI = FALSE, trace = 0, control=NULL, fast=TRUE)
 
 \note{
   For further details please also read the package vignette pdf-document
-  by writing vignette("PSM",package="PSM") in R.
+  by writing \code{vignette("PSM")} in R.
 }
 
 \references{ Please visit \url{http://www.imm.dtu.dk/psm} or refer to

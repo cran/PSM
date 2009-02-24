@@ -40,7 +40,7 @@ Number of random effects (can be zero).
 
 \note{
   For further details please also read the package vignette pdf-document
-  by writing vignette("PSM") in R.
+  by writing \code{vignette("PSM")} in R.
 }
 
 \references{ Please visit \url{http://www.imm.dtu.dk/psm} or refer to

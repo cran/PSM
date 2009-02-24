@@ -83,7 +83,7 @@ PSM.smooth(Model, Data, THETA, subsample = 0, trace = 0, etaList = NULL)
 
 \note{
   For further details please also read the package vignette pdf-document
-  by writing vignette("PSM") in R.
+  by writing \code{vignette("PSM")} in R.
 }
 
 \references{Please visit \url{http://www.imm.dtu.dk/psm} or refer to the
