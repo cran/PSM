@@ -59,7 +59,7 @@ function(Model, Data, THETA, deltaTime, longX=TRUE) {
     len <- length(SampleTime)
     tseq <- seq(from = SampleTime[1],to=SampleTime[len],by=deltaTime)
     TimeSpan <- SampleTime[len]-SampleTime[1]
-    n <- TimeSpan/deltaTime + 1
+    n <- as.integer(round(TimeSpan/deltaTime + 1))
     
     # find where SampleTime are equal to t
     where <- abs(t.default(matrix(rep(SampleTime,n),nrow=len,ncol=n))-tseq) < 1000*.Machine$double.eps

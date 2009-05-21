@@ -29,7 +29,7 @@ ModelCheck <- function(Model , Data , Par, DataHasY=TRUE) {
       
   # Model contains the correct object
   if( any(!( c("X0","SIG","S","ModelPar")   %in% names(Model))) ) {
-    errmsg <- ("Model doesn't contain the correct objects") ; return(list(errmsg = errmsg, ok=FALSE)) }
+    errmsg <- ("Model does not contain $X0, $SIG, $S and $ModelPar objects. They must all be defined.") ; return(list(errmsg = errmsg, ok=FALSE)) }
 
   
   # Model objects are functions
@@ -86,6 +86,10 @@ ModelCheck <- function(Model , Data , Par, DataHasY=TRUE) {
     # OMEGA is NULL  
       phi <- Model$h(eta=NULL,theta=Parlist$theta,covar=Data$covar)      
   }
+  if( prod(unlist(lapply(phi,length)))==0) {
+    errmsg <- ("An element in phi returned from $h has length zero. The error could be caused by using
+  eta in $h while using OMEGA=NULL.") ; return(list(errmsg = errmsg, ok=FALSE)) }
+  
 
   # Matrices
   if(Linear) {

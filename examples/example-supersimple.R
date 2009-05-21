@@ -54,7 +54,8 @@ par <- list(LB = MyTHETA/20,
             Init = c(k=.005,V=100),
             UB = MyTHETA*20)
 
-fit <- PSM.estimate(mod1,SimData,par,CI=TRUE)
+con <- list(optimizer='ucminf',trace=T)
+fit <- PSM.estimate(mod1,SimData,par,CI=TRUE,control=con)
 fit[1:3]
 
 sm <- PSM.smooth(mod1,SimData,fit$THETA,subs=50)

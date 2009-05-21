@@ -93,9 +93,24 @@ if(FALSE) { #Numerical gradients
   }
 }
 
+newData <- list()
+for (i in 1:9) {
+  newData[[i]] <- list(Time=seq(0,3.6,.9), U=matrix(rnorm(5)^2,nrow=1))
+}
+
+sim <- PSM.simulate(MyModel, newData, ctsmTHETA,deltaTime=0.01)
+sim[[2]] <- Data
+PSM.plot(sim,type=c('Y','U','longX'))
+
 MyPar <- list(LB = 0.5*ctsmTHETA,
               Init = ctsmTHETA*1,
               UB = 1.5*ctsmTHETA)
+
+system.time(
+fit <- PSM.estimate(MyModel,sim,MyPar,CI=FALSE,trace=1)
+            )
+fit[1:5]
+
 system.time(
 fit <- PSM.estimate(MyModel,list(Data),MyPar,CI=FALSE,trace=1)
             )

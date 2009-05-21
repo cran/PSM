@@ -39,6 +39,7 @@ Model1 <- list(
                       matD=NA )
                },
                X0 = function(Time,phi,U) {
+                 
                  C0 <- phi[["C0"]]
                  matrix(c(C0, C0*k1/k2, C0*ke),ncol=1)
                },
@@ -66,7 +67,7 @@ par1 <- list(LB   = c(  200,  50^2,   0,  .0 ),
              UB   = c( 1800, 150^2,  15,  .50))
 
 Rprof(filename = "Rprof1.out")
-fit1 <- PSM.estimate(Model=Model1,Data=Cpep,Par=par1,CI=T,trace=1)
+fit1 <- PSM.estimate(Model=Model1,Data=Cpep,Par=par1,CI=T,trace=1,control=list(optimizer='ucminf',trace=TRUE))
 Rprof(NULL)
 
 Rprof(filename = "Rprof2.out")
@@ -86,7 +87,12 @@ fit1[1:5]
 
 smooth1 <- PSM.smooth(Model=Model1,Data=Cpep,THETA=fit1$THETA,sub=10)
 
-PSM.plot(Cpep,smooth1,indiv=3:5,type=c('Xs','Yp.Y','res','acf','eta'))
+
+
+PSM.plot(Cpep,smooth1,indiv=3:5,type=c('Xs','Ys.Y','res','acf','eta'))
+
+
+
 
 par(mfcol=c(3,2))
 for(j in 2:3)
