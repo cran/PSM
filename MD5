@@ -1,6 +1,5 @@
-cf26e9150f7c1d00b82426cfe743b529 *DESCRIPTION
-eb0d54fd57aaab9c3457d4e884a8794c *NAMESPACE
-06de3d423e389758fb85113c6ca078b0 *PSM-Ex.R
+373140f5553607a95f9cf4506073a0c9 *DESCRIPTION
+9b92fc98669c555ce9363ccddb191fd1 *NAMESPACE
 b0f882a7b0cbb51044b99021faeb03e0 *R/APL.KF.R
 8591b73bb91e5cc79e6b0a203066fef5 *R/APL.KF.gr.R
 fb7a213784c1678ed8e8241c4becfac5 *R/APL.KF.individualloop.R
@@ -20,7 +19,7 @@ b65b134dee96aeff4e086933b0ac8c40 *R/PSM.plot.R
 e60e028aa83abcc5c43daf594b18316d *R/invlogit.R
 b07e0f17365f25396cec422b359a2f22 *R/logit.R
 90af72e938638020bc972eba0c327d1e *R/matexp.R
-f072b7c01edb067f48f4416da955e257 *R/zzz.R
+bbf26123c40af0339e7c7377a67c0c13 *R/zzz.R
 d55d3430f2e2b9dd2bb5b29a8d254370 *examples/BioReactorCTSMFilter.csv
 94b4d209dcf038478c1d15f30c9be279 *examples/BioReactorCTSMPred.csv
 2227d55932c3c6619a75d7cbd439ed28 *examples/BioReactorCTSMSmooth.csv
@@ -59,14 +58,8 @@ b16e17dd6ae1baa8b73844e1a122c18a *examples/sde0_1.csv
 5ef0843558f53737cbf005fa81267d59 *examples/simdose.RData
 22c2b5576bc1c14ba91bf9b482cde55c *examples/simisr.RData
 81dd95e9d8c7c4403c6a3ba2fca037ef *examples/tmp.R
-124fa871e7445eee816fe5a8e3b215e2 *inst/doc/PSM.Rnw
-62ff857122b82c7c893354aded52bd9f *inst/doc/PSM.pdf
-ac8752590600556e3d103a6200a7015b *inst/doc/images/comp2dose.eps
-3826c0b136f6f71014d89fceb8567a33 *inst/doc/images/comp2dose.pdf
-bac18d29590a6c70507d7bc436f0eece *inst/doc/images/isrmodel.eps
-dbce0fbe13deb9cc0141ac1e5f89d502 *inst/doc/images/isrmodel.pdf
-97199cb55e80c6d0b9d6294c48e02280 *inst/doc/simdose.RData
-bbe2356b3316b3bbc94e4bb3447efd84 *inst/doc/simisr.RData
+57b0a5dc04c54a433a9271d78b134eba *inst/doc/PSM.Rnw
+dda606c80a3647e4c9159411e80af587 *inst/doc/PSM.pdf
 953433b6881f7e2ef115d6f7b9cb3f1f *man/PSM-internal.Rd
 286584afbf6a4655dc78059d98b9c726 *man/PSM-package.Rd
 3857721dcbcf9d3c3095342f699bb7cd *man/PSM.estimate.Rd
@@ -80,3 +73,10 @@ f371ccbe500c3ced79021c7fa779a73f *man/PSM.simulate.Rd
 c6ada88673413a71f125833bb91910eb *src/matexp.f
 86f8c4e00e6819a8374eeb8c1e5ec7c7 *src/matutil77.f
 d0e790d6dabb1ad809ee0bf50f6d60b7 *src/matutil95.f95
+57b0a5dc04c54a433a9271d78b134eba *vignettes/PSM.Rnw
+ac8752590600556e3d103a6200a7015b *vignettes/images/comp2dose.eps
+3826c0b136f6f71014d89fceb8567a33 *vignettes/images/comp2dose.pdf
+bac18d29590a6c70507d7bc436f0eece *vignettes/images/isrmodel.eps
+dbce0fbe13deb9cc0141ac1e5f89d502 *vignettes/images/isrmodel.pdf
+179be7bdcae04e9b73ccb62a98e3679c *vignettes/simdose.RData
+1a16e8154663a6b38f04e7813e865aea *vignettes/simisr.RData
