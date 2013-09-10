@@ -2,8 +2,8 @@ Package: PSM
 Type: Package
 Title: Non-Linear Mixed-Effects modelling using Stochastic Differential
         Equations.
-Version: 0.8-8
-Date: 2013-03-21
+Version: 0.8-10
+Date: 2013-09-10
 Encoding: latin1
 Author: Stig Bousgaard Mortensen <stigbm@gmail.com> and Søren Klim
         <soren@klimens.dk>
@@ -19,7 +19,7 @@ Description: This package provides functions for estimation of linear
         dosage regimen.
 License: GPL (>= 2)
 URL: http://www.imm.dtu.dk/psm
-Packaged: 2013-03-21 04:30:05 UTC; sbm
+Packaged: 2013-09-10 17:50:40 UTC; sbm
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2013-03-21 23:06:04
+Date/Publication: 2013-09-10 20:16:22

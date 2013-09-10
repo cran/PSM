@@ -1,5 +1,13 @@
+### R code from vignette source 'PSM.Rnw'
+
 ###################################################
-### chunk number 1: PackageDescription
+### code chunk number 1: Sweavepath
+###################################################
+sweavepath <- gsub("[\\]",'/',R.home("share/texmf/"))
+
+
+###################################################
+### code chunk number 2: PackageDescription
 ###################################################
 options(keep.source = TRUE, width = 60)
 foo <- packageDescription("PSM")
@@ -9,18 +17,32 @@ options(digits=4)
 
 
 ###################################################
-### chunk number 2: Redo.flag
+### code chunk number 3: PSMtemplateLinear
 ###################################################
-Redo = TRUE
+PSM.template(Linear=TRUE,dimX=3,dimY=1,dimU=0,dimEta=3)
 
 
 ###################################################
-### chunk number 3: Dose.ModelDefinition
+### code chunk number 4: DataObj
+###################################################
+MyData <- list()
+MyData[[1]] <- list(Time=1:4,Y=matrix(c(2.1,3.2,3.4,3.7),nrow=1),covar=c(BMI=20.1))
+MyData[[2]] <- list(Time=3:7,Y=matrix(c(1.9,2.1,2.0,2.9,3.5),nrow=1),covar=c(BMI=23.4))
+
+
+###################################################
+### code chunk number 5: Redo.flag
+###################################################
+Redo = FALSE
+
+
+###################################################
+### code chunk number 6: Dose.ModelDefinition
 ###################################################
 Model.SimDose = list()
 Model.SimDose$Matrices = function(phi) {
-  V1i <- phi$V1i; V2=phi$V2; CL = phi$CL; CLd = phi$CLd; 
-  matA <- matrix(c(-(CL+CLd)/V1i ,  CLd/V2 ,   
+  V1i <- phi$V1i; V2=phi$V2; CL = phi$CL; CLd = phi$CLd;
+  matA <- matrix(c(-(CL+CLd)/V1i ,  CLd/V2 ,
                    CLd/V1i , -CLd/V2 ) ,nrow=2,byrow=T)
   matC <- matrix(c(1/V1i,0),nrow=1)
   list(matA=matA,matC=matC)
@@ -28,7 +50,7 @@ Model.SimDose$Matrices = function(phi) {
 Model.SimDose$X0 = function(Time=Na,phi,U=Na) {
   matrix(0,nrow=2)
 }
-Model.SimDose$SIG = function(phi) { 
+Model.SimDose$SIG = function(phi) {
   sig1 <- phi[["sig1"]]
   matrix(c( sig1,0,
            -sig1,0), nrow=2, byrow=T)
@@ -47,95 +69,78 @@ Model.SimDose$ModelPar = function(THETA){
   list(theta=list(V1 = THETA['V1'],V2=V2,CLd=CLd,CL=THETA['CL'], sig1=THETA['sig1'], S=THETA['S']),
        OMEGA=matrix(THETA['OMEGA1']) )
 }
-Model.SimDose$Dose = list(
-  Time = c(30,180),
-  State = c(1, 1),
-  Amount = c(1500,1500)
-  )
 SimDose.THETA <-  c(CL=0.05,V1 = 5, sig1 = 10 , S = 20 , OMEGA1 = .2)
 
 
 ###################################################
-### chunk number 4: SamplingScheme
+### code chunk number 7: SamplingScheme
 ###################################################
 N = 5
 SimDose.Data <- vector(mode="list",length=N)
-for (i in 1:N) 
+for (i in 1:N) {
   SimDose.Data[[i]]$Time <- seq(from=10,by=10,to=400)
+  SimDose.Data[[i]]$Dose <-list(
+                                Time = c(30,180),
+                                State = c(1, 1),
+                                Amount = c(1500,1500)
+                                )
+}
 
 
 ###################################################
-### chunk number 5: Dose.SimulateData
+### code chunk number 8: Dose.SimulateData
 ###################################################
 if(Redo) {
   SimDose.Data <- PSM.simulate(Model.SimDose, SimDose.Data, SimDose.THETA, deltaTime=.1)
-} else 
+} else
   load("simdose.RData")
 
 
 ###################################################
-### chunk number 6: figure1
+### code chunk number 9: figure1
 ###################################################
-par(mfcol=c(3,2),mar = c(2, 4, 2, 2)+.1)
-for(id in 1:2) {
-  plot(SimDose.Data[[id]]$Time , SimDose.Data[[id]]$Y,
-         ylab="Observations", main=paste('Individual ',id,', eta= ',
-                                round(SimDose.Data[[id]]$eta,3),sep=""))
-  for(i in 1:2) {
-    plot(SimDose.Data[[id]]$longTime , SimDose.Data[[id]]$longX[i,],type="l",
-         ylab=paste('State',i))
-    rug(SimDose.Data[[id]]$Time)
-  }
-}
+PSM.plot(SimDose.Data,indiv=1:2,type=c('Y','longX','eta'))
+#par(mfcol=c(3,2),mar = c(2, 4, 2, 2)+.1)
+#for(id in 1:2) {
+#  plot(SimDose.Data[[id]]$Time , SimDose.Data[[id]]$Y,
+#         ylab="Observations", main=paste('Individual ',id,', eta= ',
+#                                round(SimDose.Data[[id]]$eta,3),sep=""))
+#  for(i in 1:2) {
+#    plot(SimDose.Data[[id]]$longTime , SimDose.Data[[id]]$longX[i,],type="l",
+#         ylab=paste('State',i))
+#    rug(SimDose.Data[[id]]$Time)
+#  }
+#}
 
-source("~/PSM/PSM/R/PSM.estimate.R")
+
 ###################################################
-### chunk number 7: Dose.EstimateParameters
+### code chunk number 10: Dose.EstimateParameters
 ###################################################
-parA <- list(LB=SimDose.THETA/10, Init=SimDose.THETA , UB=SimDose.THETA*1.9 )
-if(Redo) fitA <- PSM.estimate(Model.SimDose,SimDose.Data,parA,CI=T,trace=1)
+parA <- list(LB=SimDose.THETA*.5, Init=SimDose.THETA , UB=SimDose.THETA*1.5 )
+if(Redo) fitA <- PSM.estimate(Model.SimDose,SimDose.Data,parA,CI=T)
 fitA[1:5]
-fitA[6]
-
-Model.SimDose$ModelPar = function(THETA){
-  V2 <- 10
-  CLd <- 0.1
-  list(theta=list(V1 = THETA[2],V2=V2,CLd=CLd,CL=THETA[1], sig1=THETA[3], S=THETA[4]),
-       OMEGA=matrix(THETA[5]) )
-}
-APL.KF(fitA$THETA,Model=Model.SimDose,Pop.Data=SimDose.Data)
-source('APL.KF.R')
-
-res <- fdHess(fitA$THETA,APL.KF,Model=Model.SimDose,Pop.Data=SimDose.Data,GUIFlag=2)
-HESSIAN <- res$Hessian
-(COV <- solve(HESSIAN))
-(STD <- matrix(sqrt(diag(COV)),nrow=1))
-STDmat <- t(STD)%*%STD
-(COR <- 1/STDmat*COV)
-
-fitA$CI
-
 SimDose.THETA
 
 
 ###################################################
-### chunk number 8: Dose.EstimateStates
+### code chunk number 11: Dose.EstimateStates
 ###################################################
-if(Redo) 
+if(Redo)
   out <- PSM.smooth(Model.SimDose, SimDose.Data, fitA$THETA, subsample = 20)
 # View the data structure
 names(out[[1]])
 
 
 ###################################################
-### chunk number 9: figure2
+### code chunk number 12: figure2
 ###################################################
 par(mfcol=c(3,2),mar = c(2, 4, 2, 2)+.1)
+pos <- c('topright','bottomright')
 for(id in 1:2) {
   tmp <- out[[id]]$Ys
   plot(SimDose.Data[[id]]$Time , SimDose.Data[[id]]$Y,
          ylab="Observations", main=paste('Individual',id),ylim=range(tmp))
-  legend(400, y = max(tmp), legend=c('Smooth est.'),
+  legend(x=pos[1], legend=c('Smooth est.'),
          lty=c('71A1'),col='blue', xjust=1,yjust=1,bty="n")
   lines(out[[id]]$Time , out[[id]]$Ys,lty='71A1',col='blue')
   for(i in 1:2) {
@@ -143,7 +148,7 @@ for(id in 1:2) {
          ylab=paste('State',i))
     lines(out[[id]]$Time , out[[id]]$Xs[i,],lty='71A1',col="blue")
     rug(SimDose.Data[[id]]$Time)
-    legend(400, y = max(out[[id]]$Xs[i,]), legend=c('Simulation','Smooth est.'),
+    legend(x=pos[i], legend=c('Simulation','Smooth est.'),
            lty=c('solid','71A1'),col=c("black","blue"),xjust=1,
            yjust=1,bty="n",y.intersp=.8)
   }
@@ -151,7 +156,7 @@ for(id in 1:2) {
 
 
 ###################################################
-### chunk number 10: ISR.ModelDefinition
+### code chunk number 13: ISR.ModelDefinition
 ###################################################
 k1 = 0.053; k2 = 0.051; ke = 0.062;
 Model.SimISR <- list()
@@ -178,26 +183,26 @@ Model.SimISR$X0 = function(Time=NA,phi,U=NA) {
   tmp[2] <- C0*k1/k2
   tmp[3] <- C0*ke
   tmp[4] <- 0
-  matrix(tmp,ncol=1) 
+  matrix(tmp,ncol=1)
 }
 Model.SimISR$SIG = function(phi) {
-  diag( c(0,0,phi[["SIG33"]],0)) 
+  diag( c(0,0,phi[["SIG33"]],0))
 }
 Model.SimISR$S = function(phi) {
-  return( matrix(phi[["S"]])) 
-} 
+  return( matrix(phi[["S"]]))
+}
 Model.SimISR$h = function(eta,theta,covar) {
   phi <- theta
   phi[["B"]] <- theta[["B"]]*exp(eta[1])
   phi[["K"]] <- theta[["K"]]*exp(eta[2])
   phi[["C0"]] <- theta[["C0"]]*exp(eta[3])
-  return(phi) 
+  return(phi)
 }
 Model.SimISR$ModelPar = function(THETA){
   list(theta=list(C0=900,S=8500,
-                a1=THETA[1],a2=THETA[2],
-                SIG33=THETA[3],
-                K = THETA[4], B = THETA[5]),
+                a1=THETA['a1'],a2=THETA['a2'],
+                SIG33=THETA['SIG33'],
+                K = THETA['K'], B = THETA['B']),
               OMEGA=diag(c(.2,.2,.2))
        )
 }
@@ -205,31 +210,31 @@ Model.SimISR$ModelPar = function(THETA){
 
 
 ###################################################
-### chunk number 11: ISR.SimulateData
+### code chunk number 14: ISR.SimulateData
 ###################################################
 Sim.Data <- vector(mode="list",length=2)
 for (i in 1:2) {
   Sim.Data[[i]]$Time <- c( 0,15,30,45,60,75,90,120,150,180,210,240,270,300,330,
                           360,420,480,600,615,630,645,660,675,690,720,750,780,810,
                           840,960,1140,1320,1410,1440)
-  Sim.Data[[i]]$U <- matrix(c( rep(1,35) , 
+  Sim.Data[[i]]$U <- matrix(c( rep(1,35) ,
                               as.numeric( Sim.Data[[i]]$Time %in% c(0,15,240,600,615)) )
                             ,byrow=T,nrow=2)
 }
 
 
 ###################################################
-### chunk number 12: ISR.SimulateData
+### code chunk number 15: ISR.SimulateData
 ###################################################
-Sim.THETA <-  c(0.02798 , 0.01048 , 4 , 427.63 , 1.7434)
+Sim.THETA <-  c(a1=0.02798, a2=0.01048, SIG33=4 , K=427.63 , B=1.7434)
 if(Redo) {
-  Sim.Data <- PSM.simulate(Model.SimISR, Sim.Data, Sim.THETA, deltaTime=.1 ) 
-} else 
+  Sim.Data <- PSM.simulate(Model.SimISR, Sim.Data, Sim.THETA, deltaTime=.1 )
+} else
   load("simisr.RData")
 
 
 ###################################################
-### chunk number 13: figure3
+### code chunk number 16: figure3
 ###################################################
 par(mfcol=c(4,2),mar = c(2, 4, 2, 2)+.1)
 for(id in 1:2) {
@@ -248,7 +253,7 @@ for(id in 1:2) {
 
 
 ###################################################
-### chunk number 14: ISR.EstimationModel
+### code chunk number 17: ISR.EstimationModel
 ###################################################
 Model.Est <- list(
             Matrices=function(phi) { list(
@@ -273,13 +278,13 @@ Model.Est <- list(
               phi[["C0"]] <- theta[["C0"]]*exp(eta[1])
               return(phi) } ,
             ModelPar = function(THETA){
-              return(list(theta=list(C0=THETA[1],S=THETA[2],SIG33=THETA[3]),
-                          OMEGA=matrix(THETA[4])))}
+              return(list(theta=list(C0=THETA['C0'],S=THETA['S'],SIG33=THETA['SIG33']),
+                          OMEGA=matrix(THETA['OMEGA'])))}
             )
 
 
 ###################################################
-### chunk number 15: ISR.RemoveInputFromData
+### code chunk number 18: ISR.RemoveInputFromData
 ###################################################
 Pop.Data <- Sim.Data
 for (i in 1:2)
@@ -287,24 +292,24 @@ for (i in 1:2)
 
 
 ###################################################
-### chunk number 16: ISR.ParameterEstimation
+### code chunk number 19: ISR.ParameterEstimation
 ###################################################
-par1 <- list(LB   = c(  200,  50^2,   0,  .0 ),
-             Init = c( 1000, 100^2,  10,  .25),
-             UB   = c( 3000, 150^2,  15,  .50))
+par1 <- list(LB   = c(C0= 200, S= 50^2, SIG33= 0, OMEGA=.0 ),
+             Init = c(C0=1000, S=100^2, SIG33=10, OMEGA=.25),
+             UB   = c(C0=3000, S=150^2, SIG33=15, OMEGA=.50))
 if(Redo) obj1 <- PSM.estimate(Model.Est, Pop.Data, par1,CI=T,trace=1)
-obj1[1:3]
+obj1[1:5]
 
 
 ###################################################
-### chunk number 17: ISR.EstimateStates
+### code chunk number 20: ISR.EstimateStates
 ###################################################
 if(Redo)
   Data.Sm <- PSM.smooth( Model.Est , Pop.Data, obj1$THETA, subsample=10)
 
 
 ###################################################
-### chunk number 18: figure4
+### code chunk number 21: figure4
 ###################################################
 par(mfcol=c(4,2),mar = c(2, 4, 2, 2)+.1)
 for(id in 1:2) {
@@ -325,7 +330,7 @@ for(id in 1:2) {
 
 
 ###################################################
-### chunk number 19: figure5
+### code chunk number 22: figure5
 ###################################################
 par(mfcol=c(2,1),mar = c(3,3, 0, 2)+.1)
 for(ID in 1:2) {
