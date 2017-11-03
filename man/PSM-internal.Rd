@@ -84,7 +84,7 @@ invlogit(y, xmin, xmax)
   }
 }
 
-\author{ Stig B. Mortensen and Søren Klim }
+\author{ Stig B. Mortensen and Soeren Klim }
 \seealso{ \code{\link{PSM}}}
 %\examples{
 %}
